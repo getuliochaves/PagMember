@@ -4,7 +4,7 @@ Plugin que integra automaticamente uma area de membros feita em Wordpress com os
 
 ## Changelog
 
-### 5.1
+### 5.2
 * Atualização de Servidor
 
 
