@@ -12,9 +12,6 @@ $listaForm = $wpdb->get_results("SELECT * FROM $wpdb->postmeta WHERE meta_key li
 
 $contaForm = count($listaForm);
 ?>
-<?php
-if($contaForm > 0){
-?>
 
 <div class="alert alert-success">
 <h4>Cadastre novas formas para enviar o acesso para seu cliente, clicando nos botões abaixo.</h4>
@@ -54,6 +51,9 @@ if($contaForm > 0){
 
 </div>
 
+<?php
+if($contaForm > 0){
+?>
 
 <table class="table table-bordered">
         <thead>
