@@ -1,5 +1,5 @@
 # PagMember
-~Current Version:5.6~
+
 Plugin que integra automaticamente uma area de membros feita em Wordpress com os processadores de pagamento PagSeguro, Hotmart, Monetizze e Eduzz.
 
 ## Changelog
@@ -24,3 +24,5 @@ Licença privada, disponivel para assinantes do geracaodigital.com
 * Av Afonso Pena, 167
 * Belo Horizonte, MG
 * Brasil
+
+~Current Version:5.6~
