@@ -396,10 +396,18 @@ $transacaoUsuario['senhaUsu'] = base64_encode($senhaUsu);
 	$atualizacaoAcesso = $dadosEnvio['atualizacaoAcesso'];
 	$cancelamentoAcesso = $dadosEnvio['cancelamentoAcesso'];
 	$msgFinal = $dadosEnvio['msgFinal'];
+	$codificado = $dadosEnvio['codificado'];
 
-	$msgInicial = str_replace('*nomeCliente*', $nomeCliPS, $msgInicial);
-	$atualizacaoAcesso = str_replace('*nomeCliente*', $nomeCliPS, $atualizacaoAcesso);
-	$cancelamentoAcesso = str_replace('*nomeCliente*', $nomeCliPS, $cancelamentoAcesso);
+	if($codificado == 'sim'){
+			$msgInicial = base64_decode($msgInicial);
+			$atualizacaoAcesso = base64_decode($atualizacaoAcesso);
+			$cancelamentoAcesso = base64_decode($cancelamentoAcesso);
+			$msgFinal = base64_decode($msgFinal);
+	};
+
+	$msgInicial = str_replace('*nomeCliente*', $nomeCli, $msgInicial);
+	$atualizacaoAcesso = str_replace('*nomeCliente*', $nomeCli, $atualizacaoAcesso);
+	$cancelamentoAcesso = str_replace('*nomeCliente*', $nomeCli, $cancelamentoAcesso);
 
 	//Caso o campo de atualizacaoAcesso, esteja vazio, monte essa mensagem
 	if($atualizacaoAcesso == ''){

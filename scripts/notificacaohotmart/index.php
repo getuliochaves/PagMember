@@ -62,6 +62,7 @@ if($tipoPost != 'testeLocal'){
 		$idProd = $_POST['prod'];
 		$valorProd = $_POST['price'];
 		$oferta = $_POST['off'];
+		$nomeCliPS = $nomeCli;
 
 		if($assinatura == '' or $assinatura == null){
 			$statusTrasacao = $_POST['status'];
@@ -79,16 +80,16 @@ if($tipoPost != 'testeLocal'){
 				$statusTrasacaoOk = 3;
 			break;
 
-			case 'completed': $statusCompra = 'Aprovado';
-				$statusTrasacaoOk = 3;
-			break;
 
 			case 'pending_analysis': $statusCompra = 'Aguardando pagamento';
 				$statusTrasacaoOk = 1;
 			break;
+
 			case 'billet_printed': $statusCompra = 'Aguardando pagamento';
 				$statusTrasacaoOk = 1;
 			break;
+
+
 			case 'refunded': $statusCompra = 'Cancelada';
 				$statusTrasacaoOk = 6;
 			break;
@@ -101,23 +102,8 @@ if($tipoPost != 'testeLocal'){
 				$statusTrasacaoOk = 6;
 			break;
 
-			case 'delayed': $statusCompra = 'Cancelada';
-				$statusTrasacaoOk = 6;
-			break;
-
-			case 'expired': $statusCompra = 'Cancelada';
-				$statusTrasacaoOk = 6;
-			break;
-
-			case 'active': $statusCompra = 'Aprovado';
-				$statusTrasacaoOk = 3;
-			break;
 
 			case 'canceled': $statusCompra = 'Cancelada';
-				$statusTrasacaoOk = 6;
-			break;
-
-			case 'inactive': $statusCompra = 'Cancelada';
 				$statusTrasacaoOk = 6;
 			break;
 
@@ -168,6 +154,7 @@ if($tipoPost == 'testeLocal'){
 
 	$nomeCli = $_POST['nomeCli'];
 	$emailCli = $_POST['emailCli'];
+	$nomeCliPS = $nomeCli;
 
 	$statusTrasacao = $_POST['statusTrasacao'];
 
@@ -443,6 +430,14 @@ if($tipoPost == 'testeLocal'){
 		$atualizacaoAcesso = $dadosEnvio['atualizacaoAcesso'];
 		$cancelamentoAcesso = $dadosEnvio['cancelamentoAcesso'];
 		$msgFinal = $dadosEnvio['msgFinal'];
+		$codificado = $dadosEnvio['codificado'];
+
+		if($codificado == 'sim'){
+				$msgInicial = base64_decode($msgInicial);
+				$atualizacaoAcesso = base64_decode($atualizacaoAcesso);
+				$cancelamentoAcesso = base64_decode($cancelamentoAcesso);
+				$msgFinal = base64_decode($msgFinal);
+		};
 
 		$msgInicial = str_replace('*nomeCliente*', $nomeCliPS, $msgInicial);
 		$atualizacaoAcesso = str_replace('*nomeCliente*', $nomeCliPS, $atualizacaoAcesso);
@@ -514,7 +509,7 @@ if($tipoPost == 'testeLocal'){
 			<h3>Dados de Acesso '.$dadosAcessoLimitado.'</h3>
 			<strong>Página de Login:</strong> '.$loginUsu.'<br/>
 			<strong>Usuário:</strong> '.$emailCli.'<br/><br/>
-			<strong>Produto Adquirido:</strong> '.$nomeProd.'#'.$oferta.'<br/>
+			<strong>Produto Adquirido:</strong> '.$nomeProd.'<br/>
 			<strong>Status da Compra:</strong> '.$statusCompra.'<br/>'.$msgAguardaPagmento.'
 			<br/><br/>
 			<strong>OBS: Use mesma senha, cadastrada anteriormente. Caso não lembre, acesse a '.$loginUsu.', e clique no botão recumperar senha.</strong><br/>
@@ -530,7 +525,7 @@ if($tipoPost == 'testeLocal'){
 				<strong>Página de Login:</strong> '.$loginUsu.'<br/>
 				<strong>Usuário:</strong> '.$emailCli.'<br/>
 				<strong>Senha:</strong> '.$senhaUsu.'<br/><br/>
-				<strong>Produto Adquirido:</strong> '.$nomeProd.'#'.$oferta.'<br/>
+				<strong>Produto Adquirido:</strong> '.$nomeProd.'<br/>
 				<strong>Status da Compra:</strong> '.$statusCompra.'<br/>'.$msgAguardaPagmento.'
 				<br/><br/>
 				'.$msgFinal;
@@ -548,7 +543,7 @@ if($tipoPost == 'testeLocal'){
 
 					$Mensagem = $msgInicial.'<br/>
 					<br/>
-					<strong>Produto a ser Cancelado:</strong> '.$nomeProd.'#'.$oferta.'<br/>
+					<strong>Produto a ser Cancelado:</strong> '.$nomeProd.'<br/>
 					<strong>Status da Compra:</strong> '.$statusCompra.'<br/>
 					<br/>
 					'.$msgFinal;

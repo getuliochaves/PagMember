@@ -3,7 +3,7 @@
 Plugin Name: PagMember
 Plugin URI: http://www.pagmember.com
 Description: Plugin de integração com o Hotmart e PagSeguro para área de Membros. Após a aprovação do pagamento, gera o usuário e a senha para o cliente e envia para o email automaticamente.
-Version: 5.2
+Version: 5.6
 Author: Getulio Chaves
 Author URI: http://www.geracaodigital.com
 License: GPLv2
@@ -20,7 +20,7 @@ if (is_admin()) { // note the use of is_admin() to double check that this is hap
 			'zip_url' => 'https://github.com/getuliochaves/PagMember/zipball/master', // the zip url of the GitHub repo
 			'sslverify' => true, // whether WP should check the validity of the SSL cert when getting an update, see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
 			'requires' => '3.0', // which version of WordPress does your plugin require?
-			'tested' => '4.7.5', // which version of WordPress is your plugin tested up to?
+			'tested' => '4.8.2', // which version of WordPress is your plugin tested up to?
 			'readme' => 'README.md', // which file to use as the readme for the version number
 			'access_token' => '', // Access private repositories by authorizing under Appearance > GitHub Updates when this example plugin is installed
 		);

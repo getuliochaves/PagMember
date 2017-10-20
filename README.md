@@ -4,7 +4,13 @@ Plugin que integra automaticamente uma area de membros feita em Wordpress com os
 
 ## Changelog
 
-### 5.3
+### 5.6
+* Correção de Bug HTML em campos das mensagens de Envio de Dados para o Cliente.
+
+### 5.5
+* Atualização Envio Indevido, ao completar a compra Dados de Acesso Hotmart, PagSeguro, Eduzz e Monetizze
+
+### 5.1
 * Atualização de Servidor
 
 
