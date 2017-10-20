@@ -36,7 +36,7 @@ class WP_GitHub_Updater_PagMember {
 	/**
 	 * GitHub Updater version
 	 */
-	const VERSION = 5.2;
+	const VERSION = 5.6;
 
 	/**
 	 * @var $config the config for the updater
