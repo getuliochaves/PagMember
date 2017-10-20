@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) || class_exists( 'WPGitHubUpdater' ) || class_exists
 /**
  *
  *
- * @version 5.3
+ * @version 1.0
  * @author Joachim Kudish <info@jkudish.com>
  * @link http://jkudish.com
  * @package WP_GitHub_Updater_PagMember
@@ -36,7 +36,7 @@ class WP_GitHub_Updater_PagMember {
 	/**
 	 * GitHub Updater version
 	 */
-	const VERSION = 5.3;
+	const VERSION = 5.2;
 
 	/**
 	 * @var $config the config for the updater
