@@ -233,6 +233,60 @@ Configurações Pendentes</h4>
 
 </div> <!-- Fim da DIV alert -->
 
+
+<?php
+
+//Inicia Verificacao de URL de Notificação Atualizada ou Não
+//$pastas = array('Hotmart[notificacaohotmart]','notificacaopagseguro','notificacaomonetize','notificacaoeduzz');
+$pastas = array('Hotmart' => 'notificacaohotmart', 'PagSeguro' => 'notificacaopagseguro', 'Monetizze' => 'notificacaomonetizze', 'Eduzz' => 'notificacaoeduzz');
+
+foreach($pastas as $tipoMetodo => $pasta){
+
+  //Var_dump($tipoMetodo);
+  $nomeNot = 'notificacaoPagMember#'.$tipoMetodo;
+  $idN = $wpdb->get_var("SELECT option_id FROM $wpdb->options WHERE option_name = '$nomeNot'");
+
+
+	if(file_exists(ABSPATH.$pasta)){
+		//echo '<br>pasta existe '.$pasta;
+
+		if(file_exists(ABSPATH.$pasta.'/versao.php')){
+      $mostraMSG = 'sim';
+			include_once(ABSPATH.$pasta.'/versao.php');
+
+			if($versaoScript < $versaoPlugin){
+        ?>
+<div class="alert alert-danger" style="width:93%;" role="alert"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Ops... Versão da Notificação <?php echo $tipoMetodo; ?> Desatualizada... Vamos Atualizar as URL de Notificações <?php echo $tipoMetodo; ?>, Aguarde...</div>
+<meta http-equiv="refresh" content="0; url=admin.php?page=pagmember&pg=notificacoes&pg2=notifica&pg3=del&meta_id=<?php echo $idN; ?>&url=<?php echo $pasta; ?>&tipoMetodo=<?php echo $tipoMetodo; ?>">
+
+      <?php
+
+			}
+
+
+
+		}else{
+
+?>
+<div class="alert alert-danger" style="width:93%;" role="alert"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Ops... Arquivo de Notificação <?php echo $tipoMetodo; ?> Não Existe... Vamos Atualizar as URL de Notificações <?php echo $tipoMetodo; ?>, Aguarde...</div>
+<meta http-equiv="refresh" content="0; url=admin.php?page=pagmember&pg=notificacoes&pg2=notifica&pg3=del&meta_id=<?php echo $idN; ?>&url=<?php echo $pasta; ?>&tipoMetodo=<?php echo $tipoMetodo; ?>">
+
+<?php
+		}
+
+	}
+
+ //echo $pasta;
+
+
+};
+
+
+
+//FIM Verificacao de URL de Notificação Atualizada ou Não
+
+ ?>
+
 <script>
 $a = jQuery.noConflict();
 $a(document).ready(function(){

@@ -2,7 +2,8 @@
 global $wpdb;
 $meta_id = $_GET['meta_id'];
 $urlNot = $_GET['url'];
-
+$tipoMetodo = $_GET['tipoMetodo'];
+$remover = $_GET['remover'];
 
 
 $Dir = ABSPATH.$urlNot;
@@ -65,9 +66,17 @@ if(file_exists(ABSPATH.$urlNot.'/error_log')){
 //rmdir(ABSPATH.$urlNot);
 $deltaNot = $wpdb->query("DELETE FROM $wpdb->options WHERE option_id = '$meta_id'");
 
+if($remover == 'sim'){
 ?>
-
-<h3>Excluindo Notificação </strong></h3>
-<div class="alert alert-success"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Notificação Excluida com Sucesso. Redirecionando, Aguarde...</div>
-
-<meta http-equiv="refresh" content="0; url=admin.php?page=pagmember&pg=notificacoes">
+<h3>Excluindo URL Notificação <?php echo $tipoMetodo; ?></strong></h3>
+<div class="alert alert-success"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Estamos Excluindo a URL Notificação <?php echo $tipoMetodo; ?>, Aguarde...</div>
+<meta http-equiv="refresh" content="0; url=admin.php?page=pagmember&pg=notificacoes&atualizou=removeu&tipoMetodo=<?php echo $tipoMetodo; ?>">
+<?php
+}else{
+?>
+<h3>Atualizando URL Notificação <?php echo $tipoMetodo; ?></strong></h3>
+<div class="alert alert-success"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Estamos atualizando a URL Notificação <?php echo $tipoMetodo; ?>, Aguarde...</div>
+<meta http-equiv="refresh" content="0; url=admin.php?page=pagmember&pg=notificacoes&pg2=notifica&pg3=novo&tipoMetodo=<?php echo $tipoMetodo; ?>&acao=gravar">
+<?php
+};
+?>

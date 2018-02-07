@@ -26,17 +26,17 @@ $emailCliente = $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE op
 if(count($pegaDadosGeral) == 0){
 	echo '<div class="alert alert-success">Você deve definir um email de testes, antes de testar este método, no menu configurações.</div>';
 	}
-	
-if(count($pegaDadosGeral) > 0){	
-$listaDadosGeral = unserialize($pegaDadosGeral);	
+
+if(count($pegaDadosGeral) > 0){
+$listaDadosGeral = unserialize($pegaDadosGeral);
 $emailCliente = $listaDadosGeral['EmailTestes'];
-	
+
 //Verifica se o email de testes existe
 if($emailCliente == ''){
 	echo '<div class="alert alert-success">Você deve definir um email de testes, antes de testar este método, no menu configurações.</div>';
 }else{
 
-//Define a senha aleatória	
+//Define a senha aleatória
 $tipoSenha = $pegaDadosMetodo['tipoSenha'];
 if($tipoSenha == 'senhaAleatoria'){
 	$senhaUsu = 'senha_aleatoria_criada_pelo_sistema';
@@ -44,8 +44,8 @@ if($tipoSenha == 'senhaAleatoria'){
 	$senhaUsu = $pegaDadosMetodo['senhaUsu'];
 }
 
-	
-if($tipoMetodo == 'SemAutenticacao'){			
+
+if($tipoMetodo == 'SemAutenticacao'){
 //Lizta Dados Remetente
 $remetenteEnvio = $pegaDadosMetodo['remetenteEnvio'];
 $emailEnvio = $pegaDadosMetodo['emailEnvio'];
@@ -53,6 +53,14 @@ $assuntoEnvio = $pegaDadosMetodo['assuntoEnvio'];
 $loginUsu = $pegaDadosMetodo['loginUsu'];
 $msgInicial = $pegaDadosMetodo['msgInicial'];
 $msgFinal = $pegaDadosMetodo['msgFinal'];
+
+$codificado = $pegaDadosMetodo['codificado'];
+
+if($codificado == 'sim'){
+		$msgInicial = base64_decode($msgInicial);
+		$msgFinal = base64_decode($msgFinal);
+};
+
 
 
 //Monta Mensagem para metodo para SemAutenticacao
@@ -68,9 +76,9 @@ Pagina de Login: '.$loginUsu.'<br/>
 $emaildestinatario = $emailCliente;
 $assunto = $assuntoEnvio;
 $mensagemHTML = ''.$monta_mensagem.'';
-$emailsender = $emailEnvio;			
+$emailsender = $emailEnvio;
 $quebra_linha = '<br/>';
-$headers = array('Content-Type: text/html; charset=UTF-8','From: '.$remetenteEnvio.' <'.$emailsender.'>');		 
+$headers = array('Content-Type: text/html; charset=UTF-8','From: '.$remetenteEnvio.' <'.$emailsender.'>');
 $resultado = wp_mail($emaildestinatario, $assunto, $mensagemHTML, $headers );
 if($resultado == true){
 	echo '<div class="alert alert-success">Mensagem Enviada com Sucesso para o seguinte email: '.$emailCliente.'</div>';
@@ -82,9 +90,9 @@ echo '<div class="alert alert-danger">Erro ao enviar mensagem. Isso pode ocorrer
 4 - Email de Destinatário incorreto ou não existe.<br>
 <br>
 OBS: Recomendamos fortemente não usar este método se não tiver um provedor de smtp configurado. Para mais informações veja a aula sobre "Configurar smtp gratuito na sua hospedagem", disponível nos tutoriais pagmember.
-</div>';		
+</div>';
 }
-		
+
 
 //}
 }//Finaliza Sem Autenticacao
@@ -92,28 +100,28 @@ OBS: Recomendamos fortemente não usar este método se não tiver um provedor de
 
 //inicia Metodo AutoResponder
 		if($tipoMetodo == 'AutoResponder'){
-			
-			//Pega Dados do Usuario			
+
+			//Pega Dados do Usuario
 			$actionForm0 = $pegaDadosMetodo['actionForm'];
 			$campoEmail = $pegaDadosMetodo['campoEmail'];
-			
+
 			$actionForm1 = explode('//', $actionForm0);
 			$actionForm = 'https://'.$actionForm1[1];
-			
+
 			$chaves = array();
 			$valores = array();
-			foreach($pegaDadosMetodo as $key => $valor){	
-			array_push($chaves, $key);	
-			
-			if($key == 'EMAIL' or $key == 'email' or $key == 'Email' or $key == $campoEmail){	
-				array_push($valores, $emailCliente);		
+			foreach($pegaDadosMetodo as $key => $valor){
+			array_push($chaves, $key);
+
+			if($key == 'EMAIL' or $key == 'email' or $key == 'Email' or $key == $campoEmail){
+				array_push($valores, $emailCliente);
 				}else{
-			array_push($valores, $valor);		
-					}	
-			}	
+			array_push($valores, $valor);
+					}
+			}
 			$dataEnvioCURL = array_combine($chaves, $valores);
-			
-						
+
+
 			$chw = curl_init();
 			curl_setopt($chw, CURLOPT_URL, $actionForm);
 			curl_setopt($chw, CURLOPT_POST, true);
@@ -125,65 +133,89 @@ OBS: Recomendamos fortemente não usar este método se não tiver um provedor de
 			curl_setopt($chw, CURLOPT_MAXREDIRS, 1);
 			curl_setopt($chw, CURLOPT_SSL_VERIFYPEER, false);
 			curl_exec($chw);
-			//$response = curl_exec($chw);			
+			//$response = curl_exec($chw);
 			curl_close($chw);
-			
+
 			echo '<div class="alert alert-success">Mensagem Enviada com Sucesso para o seguinte email: '.$emailCliente.'</div>';
-			
+
 		}//Finaliza Metodo Autoresponder
-	
-		
+
+
 		//inicia Metodo ServidorSMTP
 		if($tipoMetodo == 'ServidorSMTP'){
-			
-		//Chama a classe PHPMailer/class.phpmailer.php	
+
+		//Chama a classe PHPMailer/class.phpmailer.php
 		include_once($diretorioPadrao.'PHPMailer/class.phpmailer.php');
-		
+
 			//Pega Dados do Servidor
 			$emailServ = $pegaDadosMetodo['emailServ'];
 			$senhaServ = $pegaDadosMetodo['senhaServ'];
 			$portaServ = $pegaDadosMetodo['portaServ'];
 			$smtpServ = $pegaDadosMetodo['smtpServ'];
-			
-			//Pega Dados do Envio para o Cliente	
+
+			//Pega Dados do Envio para o Cliente
 			$remetenteUsu = $pegaDadosMetodo['remetenteUsu'];
-			$assuntoUsu = $pegaDadosMetodo['assuntoUsu'];			
-			
+			$assuntoUsu = $pegaDadosMetodo['assuntoUsu'];
+
 			$loginUsu = $pegaDadosMetodo['loginUsu'];
 			$msgInicial = $pegaDadosMetodo['msgInicial'];
 			$msgFinal = $pegaDadosMetodo['msgFinal'];
-			
-					
+
+			$codificado = $pegaDadosMetodo['codificado'];
+
+			if($codificado == 'sim'){
+					$msgInicial = base64_decode($msgInicial);
+					$msgFinal = base64_decode($msgFinal);
+			};
+
+
 			//Monta Mensagem para metodo ServidorSMTP
 			$monta_mensagem = $msgInicial.'<br><br>
 			Usuario: '.$emailCliente.'<br>
 			Senha: '.$senhaUsu.'<br>
 			Pagina de Login: '.$loginUsu.'<br><br>
 			'.$msgFinal;
-			
-			
-			//Definicoes PHP Mailer	
-			//date_default_timezone_set('America/Sao_Paulo');
+
+
+			//Definicoes PHP Mailer
+			date_default_timezone_set('America/Sao_Paulo');
+
+			$emailEnvioRE = $pegaDadosMetodo['emailEnvioRE'];
+			$tipoAutenticacao = $pegaDadosMetodo['tipoAutenticacao'];
+
+			if($emailEnvioRE == ''){
+				$emailEnvioRE = $emailServ;
+			}
+
+			if($tipoAutenticacao == ''){
+				$tipoAutenticacao = 'ssl';
+			}
+
+			if($tipoAutenticacao == 'nao'){
+				$tipoAutenticacao = false;
+			}
+
 			$mail = new PHPMailer();
-			$mail->SetLanguage('br');		
-				
+			$mail->CharSet = "UTF-8";
+			$mail->SetLanguage('br');
+
 			$mail->IsSMTP();
 			$mail->IsHTML(true);
 			$mail->SMTPAuth = true;
-			$mail->SMTPSecure = "ssl";
+			$mail->SMTPSecure = $tipoAutenticacao;
 			$mail->Port = $portaServ;
 			$mail->Host = $smtpServ;
 			$mail->Username = $emailServ;
 			$mail->Password = $senhaServ;
-			
-			$mail->SetFrom($emailServ,$remetenteUsu);
+
+			$mail->SetFrom($emailEnvioRE,$remetenteUsu);
 			$mail->AddReplyTo($emailCliente, $remetenteUsu);
 			$mail->AddAddress($emailCliente, $remetenteUsu);
 			$mail->Subject = $assuntoUsu;
 			$mail->MsgHTML(''.$monta_mensagem.'');
-			
+
 			$resultado = ($mail->Send());
-			
+
 			if($resultado == true){
 	echo '<div class="alert alert-success">Mensagem Enviada com Sucesso para o seguinte email: '.$emailCliente.'</div>';
 	}else{
@@ -193,25 +225,25 @@ echo '<div class="alert alert-danger">Erro ao enviar mensagem. Isso pode ocorrer
 3 - Ip da sua hospedagem bloqueada para enviar emails.(Envie um email para sua hospedagem perguntando para informações)<br>
 4 - Email de Destinatário incorreto ou não existe.<br>
 
-</div>';		
+</div>';
 }
-			
-			
-			
+
+
+
 		}//Finaliza Envio por ServidorSMTP
-		
+
 		//Inicia Metodo MailJet
 		if($tipoMetodo == 'MailJet'){
-			
-			
-			
-			
-			
-			
+
+
+
+
+
+
 			//Pega API KEY
 			$apikeymailjet = $pegaDadosMetodo['apikeymailjet'];
 			$secretkeymailjet = $pegaDadosMetodo['secretkeymailjet'];
-			
+
 			//Lista Dados Remetente
 			$remetenteEnvio = $pegaDadosMetodo['remetenteEnvio'];
 			$emailEnvio = $pegaDadosMetodo['emailEnvio'];
@@ -219,41 +251,49 @@ echo '<div class="alert alert-danger">Erro ao enviar mensagem. Isso pode ocorrer
 			$loginUsu = $pegaDadosMetodo['loginUsu'];
 			$msgInicial = $pegaDadosMetodo['msgInicial'];
 			$msgFinal = $pegaDadosMetodo['msgFinal'];
-			
+
+			$codificado = $pegaDadosMetodo['codificado'];
+
+			if($codificado == 'sim'){
+					$msgInicial = base64_decode($msgInicial);
+					$msgFinal = base64_decode($msgFinal);
+			};
+
+
 			//Monta Mensagem para metodo para SemAutenticacao
 			$monta_mensagem = $msgInicial.'<br><br>
-			
+
 			Usuario: '.$emailCliente.'<br>
 			Senha: '.$senhaUsu.'<br>
 			Pagina de Login: '.$loginUsu.'<br><br>
-			
-			'.$msgFinal;		
-			
-	
-			
-			$mj = new \Mailjet\Client($apikeymailjet, $secretkeymailjet);		
-			
+
+			'.$msgFinal;
+
+
+
+			$mj = new \Mailjet\Client($apikeymailjet, $secretkeymailjet);
+
 			//var_dump($mj);
-			
-		
-			
+
+
+
 			//Remove HTML do texto
-			//$textoSimples = strip_tags($monta_mensagem);	
-			
+			//$textoSimples = strip_tags($monta_mensagem);
+
 			// Resources are all located in the Resources class
-			$response = $mj->get(Resources::$Contact);		
-			
+			$response = $mj->get(Resources::$Contact);
+
 			if ($response->success()){
 			  $resposta0 = $response->getData();
 			}else{
-			  $resposta0 = $response->getStatus();			  
+			  $resposta0 = $response->getStatus();
 			  }
-			  
+
 			  $resposta = serialize($resposta0);
-			  
-		
-			
-	  
+
+
+
+
 			 $body = [
 				'FromEmail' => $emailEnvio,
 				'FromName' => $remetenteEnvio,
@@ -262,12 +302,12 @@ echo '<div class="alert alert-danger">Erro ao enviar mensagem. Isso pode ocorrer
 				'Html-part' => $monta_mensagem,
 				'Recipients' => [['Email' => $emailCliente]]
 			];
-			
-			$response = $mj->post(Resources::$Email, ['body' => $body]); 
-			
-			
-			
-			
+
+			$response = $mj->post(Resources::$Email, ['body' => $body]);
+
+
+
+
 			if($response == true){
 	echo '<div class="alert alert-success">Mensagem Enviada com Sucesso para o seguinte email: '.$emailCliente.'</div>';
 	}else{
@@ -278,19 +318,19 @@ echo '<div class="alert alert-danger">Erro ao enviar mensagem. Isso pode ocorrer
 4 - Sua hospedagem bloqueada para enviar mensagem via smtp.<br>
 5 - Email de Destinatário incorreto ou não existe(Defina um email nas configurações).<br>
 
-</div>';		
+</div>';
 }
-			
+
 	//		/
-			
-						
-			
+
+
+
 		}//Finaliza Envio MailJet
 
-	
+
 
 	};////FIM Verifica se o email de testes existe
-	
+
 	//Fim IF conta Geral > 0
 	};
 

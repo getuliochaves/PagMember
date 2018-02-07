@@ -346,7 +346,7 @@ if($tipoMetodo == 'ServidorSMTP'){
 
 
 <div class="form-group">
-    <label for="inputText" class="col-sm-2 control-label">Email:</label>
+    <label for="inputText" class="col-sm-2 control-label">Usuário SMTP/Email SMTP:</label>
     <div class="col-sm-8">
 <input type="text" class="form-control" required placeholder="Ex: contato@seudominio.com" value="<?php echo $dadosMetodo['emailServ']?>" name="emailServ">
     </div>
@@ -356,6 +356,17 @@ if($tipoMetodo == 'ServidorSMTP'){
     <label for="inputText" class="col-sm-2 control-label">Senha:</label>
     <div class="col-sm-8">
 <input type="text" class="form-control" required placeholder="Ex: 123456" value="<?php echo $dadosMetodo['senhaServ']?>" name="senhaServ">
+    </div>
+  </div>
+
+	<div class="form-group">
+    <label for="inputText" class="col-sm-2 control-label">Tipo de Autenticação:</label>
+    <div class="col-sm-8">
+			<select name="tipoAutenticacao">
+				<option value="ssl" <?php if($dadosMetodo['tipoAutenticacao'] == 'ssl'){?>selected="selected"<?php }; ?>>SSL</option>
+				<option value="tls" <?php if($dadosMetodo['tipoAutenticacao'] == 'tls'){?>selected="selected"<?php }; ?>>TLS</option>
+				<option value="nao" <?php if($dadosMetodo['tipoAutenticacao'] == 'nao'){?>selected="selected"<?php }; ?>>Sem Autenticação</option>
+			</select> Portas SSL(465), Portas TLS(25, 587, 588) ou Verifique seu SMTP
     </div>
   </div>
 
@@ -377,6 +388,12 @@ if($tipoMetodo == 'ServidorSMTP'){
   <hr>
 <h3>Dados do Cliente</h3>
 <br />
+<div class="form-group">
+    <label for="inputText" class="col-sm-2 control-label">Email de Envio:</label>
+    <div class="col-sm-8">
+<input type="text" class="form-control" required placeholder="Ex: contato@seudominio.com" value="<?php echo $dadosMetodo['emailEnvioRE']?>" name="emailEnvioRE">
+    </div>
+  </div>
 
  <div class="form-group">
     <label for="inputText" class="col-sm-2 control-label">Remetente:</label>
@@ -538,7 +555,7 @@ OBS: Use a tag *nomeCliente* para inserir o nome do Cliente.
 	});
 
 
-    $a("input").blur(function(){
+    $a(".validaFormulario").blur(function(){
      if($a(this).val() == "")
          {
              $a(this).css({"border" : "1px solid #F00", "padding": "2px"});

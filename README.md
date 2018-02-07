@@ -4,6 +4,16 @@ Plugin que integra automaticamente uma area de membros feita em Wordpress com os
 
 ## Changelog
 
+### 5.9
+* Atualização Hotmart e PagSeguro
+
+### 5.8
+* Mudanças Nas configuracoes do Hotmart
+
+### 5.7
+* Mudanças no API Key do Envio via SMTP
+* Ataualizado função utf-8 do envio SMTP
+
 ### 5.6
 * Correção de Bug HTML em campos das mensagens de Envio de Dados para o Cliente.
 
@@ -24,5 +34,3 @@ Licença privada, disponivel para assinantes do geracaodigital.com
 * Av Afonso Pena, 167
 * Belo Horizonte, MG
 * Brasil
-
-~Current Version:5.6~

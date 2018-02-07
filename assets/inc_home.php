@@ -11,6 +11,11 @@ if($pg3 == 'ativado'){
 if(($_GET['pg'] == 'produtos' && $_GET['pg2'] == '') or ($_GET['pg'] == '' && $_GET['pg2'] == '')){
  include_once('inc_start.php');
 }
+
+
+//include_once(ABSPATH.'notificaohotmart/versao.php');
+//var_dump($versaoScript);
+
 ?>
 
 

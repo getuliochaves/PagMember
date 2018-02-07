@@ -10,6 +10,7 @@ use \Mailjet\Resources;
 use \Mailjet\Client;
 
 if(isset($_GET['teste'])){
+	echo '<link rel="stylesheet" href="../wp-content/plugins/PagMember/scripts/style.css">';
 	echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 	echo '<h1>Notificação Criada e Funcionando Corretamente</h1>';
 	//Inicio dos testes
@@ -102,7 +103,7 @@ if($tipoPost == 'testeLocal'){
 	case '1': $statusCompra = 'Aguardando pagamento';
 		$statusTrasacaoOk = 1;
 	break;
-	case '2':	$statusCompra = 'Em análise';
+	case '2':	$statusCompra = 'Aguardando pagamento';
 		$statusTrasacaoOk = 1;
 	break;
 	case '3':	$statusCompra = 'Aprovado';
@@ -412,19 +413,22 @@ $transacaoUsuario['senhaUsu'] = base64_encode($senhaUsu);
 
 
 	//VERIFICA STATUS DA TRANSACAO
-	if(($statusTrasacaoOk == 1 && $userGratis == 'Permitir') or ($statusTrasacaoOk == 2 && $userGratis == 'Permitir')){ //Envia dados quando arguardar pagamento e usuário grátis for permitir
+	$gravaEvento['Status Processador'] = $statusTrasacao;
+	$enviaDados = 'nao';
+	
+	if($statusTrasacaoOk < 3 && $userGratis == 'Permitir'){ //Envia dados quando arguardar pagamento e usuário grátis for permitir
 		$enviaDados = 'sim';
-		$gravaEvento['Status Transacao']= 'Transacao Aguardando Pagamento e Usuario Gratis';
+		$gravaEvento['Status Transacao'] = 'Transacao Aguardando Pagamento e Usuario Gratis';
 	}
 
 	if($statusTrasacaoOk == 3){//Envia dados quando for aprovado
 		$enviaDados = 'sim';
-		$gravaEvento['Status Transacao']= 'Transacao Aprovada';
+		$gravaEvento['Status Transacao'] = 'Transacao Aprovada';
 	}
 
-	if($statusTrasacaoOk > 5 && $existeUsuario != false && $statusTrasacaoOk < 8){//Envia dados quando for cancelado
-		$enviaDados = 'sim';
-		$gravaEvento['Status Transacao']= 'Transacao Cancelada';
+	if($statusTrasacaoOk > 4 && $existeUsuario != false){//Envia dados quando for cancelado
+		$enviaDados = 'nao';
+		$gravaEvento['Status Transacao'] = 'Transacao Cancelada';
 	}
 
 	//FIM VERIFICA STATUS DA TRANSACAO
@@ -552,26 +556,46 @@ $transacaoUsuario['senhaUsu'] = base64_encode($senhaUsu);
 
 		//inicia Metodo ServidorSMTP
 		if($tipoMetodo == 'ServidorSMTP'){
+
+			$emailEnvioRE = $dadosEnvio['emailEnvioRE'];
+			$tipoAutenticacao = $dadosEnvio['tipoAutenticacao'];
+
+			if($emailEnvioRE == ''){
+				$emailEnvioRE = $emailServ;
+			}
+
+			if($tipoAutenticacao == ''){
+				$tipoAutenticacao = 'ssl';
+			}
+
+			if($tipoAutenticacao == 'nao'){
+				$tipoAutenticacao = false;
+			}
+
+
+
 			//Chama a classe PHPMailer/class.phpmailer.php
 			include_once('PHPMailer/class.phpmailer.php');
 			//Definicoes PHP Mailer
 			date_default_timezone_set('America/Sao_Paulo');
 			$mail = new PHPMailer();
+			$mail->CharSet = "UTF-8";
 			$mail->SetLanguage('br');
 			$mail->IsSMTP();
 			$mail->IsHTML(true);
 			$mail->SMTPAuth = true;
-			$mail->SMTPSecure = "ssl";
+			$mail->SMTPSecure = $tipoAutenticacao;
 			$mail->Port = $portaServ;
 			$mail->Host = $smtpServ;
 			$mail->Username = $emailServ;
 			$mail->Password = $senhaServ;
-			$mail->SetFrom($emailServ,$remetenteUsu);
+			$mail->SetFrom($emailEnvioRE,$remetenteUsu);
 			$mail->AddReplyTo($emailCli, $remetenteUsu);
 			$mail->AddAddress($emailCli, $remetenteUsu);
 			$mail->Subject = $assuntoUsu;
 			$mail->MsgHTML(''.$Mensagem.'');
 			$respostaEmail = $mail->Send();
+
 			if($respostaEmail){
 				$repostaMSG = 'Email ao Cliente Enviado com Uscesso';
 				$gravaEvento['Envio de Mensagem']= 'Email Enviado por ServidorSMTP';

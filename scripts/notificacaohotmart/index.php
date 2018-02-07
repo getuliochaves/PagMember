@@ -9,8 +9,15 @@ require 'Mailjet/Response.php';
 use \Mailjet\Resources;
 use \Mailjet\Client;
 if(isset($_GET['teste'])){
+	echo '<link rel="stylesheet" href="../wp-content/plugins/PagMember/scripts/style.css">';
 	echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
 	echo '<h1>Notificação Criada e Funcionando Corretamente</h1>';
+
+	if(file_exists('hotmart.txt') && isset($_GET['remove'])){
+		unlink('hotmart.txt');
+		echo '</br>Arquivo de Post Removido';
+	};
+
 	//Inicio dos testes
 }else{
 include_once('../wp-load.php');
@@ -50,6 +57,20 @@ $reenvioAcesso = $_POST['reenvioAcesso'];
 
 //Verificacao se o token recebido é igual ao token do banco
 if($chaveApi == $token){
+date_default_timezone_set('America/Sao_Paulo');
+$dataGravaPost = date("d-m-Y H:i:s");
+$dadosPost = ''.PHP_EOL;
+$dadosPost .= '==================== Gravado em: '.$dataGravaPost.'====================='.PHP_EOL;
+$dadosPost .= serialize($_POST).PHP_EOL;
+
+
+$arquivoT = fopen("hotmart.txt", "a");
+// Escreve "exemplo de escrita" no bloco1.txt
+$escreve = fwrite($arquivoT, $dadosPost);
+
+// Fecha o arquivo
+fclose($arquivoT);
+
 
 //Inicio validacao Teste Local
 if($tipoPost != 'testeLocal'){
@@ -64,22 +85,40 @@ if($tipoPost != 'testeLocal'){
 		$oferta = $_POST['off'];
 		$nomeCliPS = $nomeCli;
 
+
 		if($assinatura == '' or $assinatura == null){
 			$statusTrasacao = $_POST['status'];
 		}else{
 			$statusTrasacao = $assinatura;
 		}
 
-		//Inicio Switch status transacao
 		switch($statusTrasacao){
-		case 'started': $statusCompra = 'Aguardando pagamento';
-			$statusTrasacaoOk = 1;
+
+			/*
+			# active => Ativo --------------------------------> Fica com acesso site
+			#Inactive => Inativo -----------------------------> Perde o Acesso ao site
+			# canceled => Cancelada pelo cliente -------------> Perde o Acesso ao site
+			# started => Iniciada ----------------------------> Nao tem acesso ao site
+			# past_due => Atraso -----------------------------> Perde o acesso ao site
+			# expired => Vencido -----------------------------> Perde o Acesso ao site
+			*/
+
+			//Status Aguardando Pagamento
+			case 'started': $statusCompra = 'Aguardando pagamento';
+				$statusTrasacaoOk = 1;
 			break;
 
-			case 'approved': $statusCompra = 'Aprovado';
-				$statusTrasacaoOk = 3;
+			case 'inactive': $statusCompra = 'Aguardando pagamento';
+				$statusTrasacaoOk = 1;
 			break;
 
+			case 'past_due': $statusCompra = 'Aguardando pagamento';
+				$statusTrasacaoOk = 1;
+			break;
+
+			case 'expired': $statusCompra = 'Aguardando pagamento';
+				$statusTrasacaoOk = 1;
+			break;
 
 			case 'pending_analysis': $statusCompra = 'Aguardando pagamento';
 				$statusTrasacaoOk = 1;
@@ -89,6 +128,11 @@ if($tipoPost != 'testeLocal'){
 				$statusTrasacaoOk = 1;
 			break;
 
+			//Status Cancelado
+
+			case 'canceled': $statusCompra = 'Cancelado';
+				$statusTrasacaoOk = 6;
+			break;
 
 			case 'refunded': $statusCompra = 'Cancelada';
 				$statusTrasacaoOk = 6;
@@ -102,21 +146,24 @@ if($tipoPost != 'testeLocal'){
 				$statusTrasacaoOk = 6;
 			break;
 
+			//Status que são ativos
 
-			case 'canceled': $statusCompra = 'Cancelada';
-				$statusTrasacaoOk = 6;
+			case 'active': $statusCompra = 'Aprovado';
+				$statusTrasacaoOk = 3;
 			break;
 
-			case 'past_due': $statusCompra = 'Cancelada';
-				$statusTrasacaoOk = 6;
+			case 'approved': $statusCompra = 'Aprovado';
+				$statusTrasacaoOk = 3;
 			break;
 
-			//Status da assinatura (active, canceled, past_due, expired, started, inactive
-			default:
-					$statusCompra = 'Aguardando pagamento';
-					$statusTrasacaoOk = 1;
-				break;
-		}//FIM Switch status transacao
+			
+
+
+
+
+		};
+
+
 
 
 };//FIM // validacao Teste Local
@@ -471,20 +518,25 @@ if($tipoPost == 'testeLocal'){
 
 
 		//VERIFICA STATUS DA TRANSACAO
-		if(($statusTrasacaoOk == 1 && $userGratis == 'Permitir') or ($statusTrasacaoOk == 2 && $userGratis == 'Permitir')){ //Envia dados quando arguardar pagamento e usuário grátis for permitir
+		$gravaEvento['Status Processador'] = $statusTrasacao;
+		$enviaDados = 'nao';
+		
+		if($statusTrasacaoOk < 3 && $userGratis == 'Permitir') { //Envia dados quando arguardar pagamento e usuário grátis for permitir
 			$enviaDados = 'sim';
-			$gravaEvento['Status Transacao']= 'Transacao Aguardando Pagamento e Usuario Gratis';
+			$gravaEvento['Status Transacao'] = 'Transacao Aguardando Pagamento e Usuario Gratis';			
 		}
 
-		if($statusTrasacaoOk == 3){//Envia dados quando for aprovado
+		if($statusTrasacaoOk == 3 && $existeUsuario == false){ //Envia dados quando for aprovado
 			$enviaDados = 'sim';
-			$gravaEvento['Status Transacao']= 'Transacao Aprovada';
+			$gravaEvento['Status Transacao'] = 'Transacao Aprovada';			
 		}
 
-		if($statusTrasacaoOk > 5 && $existeUsuario != false && $statusTrasacaoOk < 8){//Envia dados quando for cancelado
-			$enviaDados = 'sim';
-			$gravaEvento['Status Transacao']= 'Transacao Cancelada';
+		if($statusTrasacaoOk > 3 && $existeUsuario != false){ //Envia dados quando for cancelado
+			$enviaDados = 'nao';
+			$gravaEvento['Status Transacao'] = 'Transacao Cancelada';			
 		}
+		
+		
 
 		//FIM VERIFICA STATUS DA TRANSACAO
 
@@ -536,7 +588,7 @@ if($tipoPost == 'testeLocal'){
 			}//FIM Caso a transacao esteja aguardando pagamento ou paga
 
 			//Caso a transacao Seja cancela ou devolvida
-			if($statusTrasacaoOk == 6 or $statusTrasacaoOk == 7){
+			if($statusTrasacaoOk == 6){
 				//Mensagem Inicial recebe o Cancelamento Acesso
 				$msgInicial = $cancelamentoAcesso;
 				//Inicio Monta Mensagem de Envio, seja cancelada ou devolvida
@@ -569,26 +621,46 @@ if($tipoPost == 'testeLocal'){
 
 			//inicia Metodo ServidorSMTP
 			if($tipoMetodo == 'ServidorSMTP'){
+				$emailEnvioRE = $dadosEnvio['emailEnvioRE'];
+				$tipoAutenticacao = $dadosEnvio['tipoAutenticacao'];
+
+				if($emailEnvioRE == ''){
+					$emailEnvioRE = $emailServ;
+				}
+
+				if($tipoAutenticacao == ''){
+					$tipoAutenticacao = 'ssl';
+				}
+
+				if($tipoAutenticacao == 'nao'){
+					$tipoAutenticacao = false;
+				}
+
+
+
 				//Chama a classe PHPMailer/class.phpmailer.php
 				include_once('PHPMailer/class.phpmailer.php');
 				//Definicoes PHP Mailer
 				date_default_timezone_set('America/Sao_Paulo');
 				$mail = new PHPMailer();
+				$mail->CharSet = "UTF-8";
 				$mail->SetLanguage('br');
 				$mail->IsSMTP();
 				$mail->IsHTML(true);
 				$mail->SMTPAuth = true;
-				$mail->SMTPSecure = "ssl";
+				$mail->SMTPSecure = $tipoAutenticacao;
 				$mail->Port = $portaServ;
 				$mail->Host = $smtpServ;
 				$mail->Username = $emailServ;
 				$mail->Password = $senhaServ;
-				$mail->SetFrom($emailServ,$remetenteUsu);
+				$mail->SetFrom($emailEnvioRE,$remetenteUsu);
 				$mail->AddReplyTo($emailCli, $remetenteUsu);
 				$mail->AddAddress($emailCli, $remetenteUsu);
 				$mail->Subject = $assuntoUsu;
 				$mail->MsgHTML(''.$Mensagem.'');
 				$respostaEmail = $mail->Send();
+
+
 				if($respostaEmail){
 					$repostaMSG = 'Email ao Cliente Enviado com Uscesso';
 					$gravaEvento['Envio de Mensagem']= 'Email Enviado por ServidorSMTP';

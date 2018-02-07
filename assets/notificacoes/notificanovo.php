@@ -45,6 +45,9 @@ if($PegNot == null && $acao == 'gravar'){
 $pastanotificacao = 'notificacao'.$nomeMinusculo;
 $diretorioDestino = ABSPATH.$pastanotificacao.'/';
 $diretorioInicial = ABSPATH.'wp-content/plugins/PagMember/scripts/'.$pastanotificacao;
+$dIVersao = ABSPATH.'wp-content/plugins/PagMember/scripts/versao.php';
+$dFVersao = $diretorioDestino.'/versao.php';
+
 
 $destino = '../copia/';
 $diretorio = '../scripts/';
@@ -52,6 +55,11 @@ copyr($diretorioInicial,$diretorioDestino);
 
 $inicioMailjet = ABSPATH.'wp-content/plugins/PagMember/scripts/Mailjet.zip';
 $destinoMailjet = $diretorioDestino.'Mailjet.zip';
+
+if(!file_exists($dFVersao)){
+  copy($dIVersao, $dFVersao);
+};
+
 
 
 
@@ -67,10 +75,10 @@ $zip->close();
 $grava = $wpdb->insert($wpdb->options, array('option_name' => $nomeNot,'option_value' => $pastanotificacao));
 ?>
 
-<h3>Criando Notificação </strong></h3>
-<div class="alert alert-success"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Notificação Criada com Sucesso. Redirecionando, Aguarde...</div>
+<h3>Criando Notificação <?php echo $tipoMetodo; ?></strong></h3>
+<div class="alert alert-success"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Notificação <?php echo $tipoMetodo; ?> Criada com Sucesso. Redirecionando, Aguarde...</div>
 
-<meta http-equiv="refresh" content="0; url=admin.php?page=pagmember&pg=notificacoes">
+<meta http-equiv="refresh" content="0; url=admin.php?page=pagmember&pg=notificacoes&atualizou=sim&tipoMetodo=<?php echo $tipoMetodo; ?>">
 <?php
 }
 else{

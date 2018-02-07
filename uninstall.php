@@ -1,5 +1,6 @@
 ﻿<?php
 global $wpdb;
+/*
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) )
   die();
 /*
@@ -8,12 +9,13 @@ delete_option('sucesspag');
 delete_option('tokemHotmart');
 delete_option('tokemPagSeguro');
 delete_option('vd_pagmember');
-*/
+
 
 $deleta1 = $wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'vd_pagmember'");
 $deleta2 = $wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'siteexterno'");
 $deleta3 = $wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'sucesspag'");
 $deleta4 = $wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'successpag'");
+
 
 $listaProd = mysql_query("SELECT * FROM $wpdb->postmeta WHERE meta_key = 'produtoPagMember'");
 $contaProd = mysql_num_rows($listaProd);
@@ -52,6 +54,6 @@ $deltaNot = $wpdb->query("DELETE FROM $wpdb->postmeta WHERE post_id = '$idNot'")
 };
 
 
-
+*/
 
 ?>
