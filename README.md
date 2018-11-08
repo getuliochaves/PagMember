@@ -1,9 +1,16 @@
 # PagMember
-~Current Version:5.9~
+~Current Version:5.93~
 
 Plugin que integra automaticamente uma area de membros feita em Wordpress com os processadores de pagamento PagSeguro, Hotmart, Monetizze e Eduzz.
 
 ## Changelog
+
+### 5.93
+* Validação de Chaves no Servidor Com SSL
+
+### 5.91
+* Atualização Hotmart Adicionar Pacotes em Produtos Diferentes
+
 
 ### 5.9
 * Atualização Hotmart e PagSeguro

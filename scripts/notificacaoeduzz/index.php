@@ -436,8 +436,10 @@ $transacaoUsuario['senhaUsu'] = base64_encode($senhaUsu);
 
 
 	//VERIFICA STATUS DA TRANSACAO
+	$gravaEvento['Status Processador'] = $statusTrasacao;
+		$enviaDados = 'nao';
 	if(($statusTrasacaoOk == 1 && $userGratis == 'Permitir') or ($statusTrasacaoOk == 2 && $userGratis == 'Permitir')){ //Envia dados quando arguardar pagamento e usuário grátis for permitir
-		$enviaDados = 'sim';
+		$enviaDados = 'sim';		
 		$gravaEvento['Status Transacao']= 'Transacao Aguardando Pagamento e Usuario Gratis';
 	}
 
@@ -626,7 +628,11 @@ var_dump($tipoAutenticacao);
 	};//FIm //Monta as Mensagens de Envio
 
 
-		//////////////////////////////////////////////////////////////////
+		
+
+	};//FIM Envia dados SIM
+	
+	//////////////////////////////////////////////////////////////////
 
 	$registraclipm = $siteProd.'registraclipm.php';
 	$curl = curl_init();
@@ -641,8 +647,6 @@ var_dump($tipoAutenticacao);
 	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 	$response33 = curl_exec($curl);
 	curl_close( $curl );
-
-	};//FIM Envia dados SIM
 
 	//Verifica Campos Vazio das Transacoes Recebidas
 		if(count($transacaoUsuario) > 0){

@@ -1,3 +1,3 @@
 <?php
-$versaoScript = 5.9;
+$versaoScript = 5.93;
  ?>

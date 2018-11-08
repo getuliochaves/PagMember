@@ -260,6 +260,8 @@ if($tipoPost == 'testeLocal'){
 			$restauraTrDB = unserialize($pegaTrDB);
 			$statusTrDB = base64_decode($restauraTrDB['StatusCompra']);
 			$trDBExiste = 'sim';
+			
+			
 
 			if($statusTrDB != $statusCompra){//Aprovado != Cancelado
 				$trDiferente = 'sim';
@@ -272,6 +274,8 @@ if($tipoPost == 'testeLocal'){
 				$trDiferente = 'sim';
 				$gravaEvento['Transacao'] = 'NOVA Transacao Inserida';
 		}
+		
+	
 
 
 		////////////////////////////////////////////////////////////////////////
@@ -530,6 +534,7 @@ if($tipoPost == 'testeLocal'){
 			$enviaDados = 'sim';
 			$gravaEvento['Status Transacao'] = 'Transacao Aprovada';			
 		}
+			
 
 		if($statusTrasacaoOk > 3 && $existeUsuario != false){ //Envia dados quando for cancelado
 			$enviaDados = 'nao';
@@ -704,6 +709,10 @@ if($tipoPost == 'testeLocal'){
 
 			//////////////////////////////////////////////////////////////////
 
+		
+
+		};//FIM Envia dados SIM
+		
 		$registraclipm = $siteProd.'registraclipm.php';
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $registraclipm);
@@ -717,8 +726,6 @@ if($tipoPost == 'testeLocal'){
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 		$response33 = curl_exec($curl);
 		curl_close( $curl );
-
-		};//FIM Envia dados SIM
 
 		//Verifica Campos Vazio das Transacoes Recebidas
 			if(count($transacaoUsuario) > 0){
